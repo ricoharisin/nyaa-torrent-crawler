@@ -191,5 +191,11 @@ func downloadTorrent(torrentUrl string) {
 	body := resp.Body
 	defer body.Close()
 
-	io.Copy(output, body)
+	err := io.Copy(output, body)
+
+	if err {
+		fmt.Println("Error while copying to", location, "-", err)
+		return
+	}
+
 }
