@@ -12,7 +12,6 @@ import (
 
 func main() {
 	args := os.Args
-	fmt.Println(len(args))
 	if len(args) < 2 {
 		showHelp()
 	} else {
@@ -22,6 +21,13 @@ func main() {
 			break
 		case "crawl":
 			crawl()
+			break
+		case "list":
+			list()
+			break
+		case "removesubscribe":
+			list()
+			removesubscribe()
 			break
 		default:
 			showHelp()
@@ -37,15 +43,18 @@ func subscribe(args1 string, args2 string) {
 
 func showHelp() {
 	fmt.Println("usage: ")
-	fmt.Println("nyaa-torrent-crawler subscribe \"keyword\" start_episode_num")
-	fmt.Println("nyaa-torrent-crawler crawl")
+	fmt.Println("nyaa-torrent-crawler <option>")
+	fmt.Println("\noption list:")
+	fmt.Println("subscribe <keyword> <current episode> | subscribe anime based on nyaa.si search keyword")
+	fmt.Println("crawl | start crawling based on susbcribe list")
+	fmt.Println("list | show subscribe list")
+	fmt.Println("removesubscribe | remove subscribe from list")
 }
 
 func crawl() {
 	listSubscribe := subscriber.GetListSubscriber()
 	for i := range listSubscribe {
 		keyword, eps := subscriber.GetSubscribeInfo(i)
-		fmt.Println(eps)
 		isSuccess, torrentUrl := crawler.StartCrawling(keyword, eps)
 		if isSuccess {
 			isSuccessDownload := downloader.DownloadTorrent(torrentUrl)
@@ -54,4 +63,20 @@ func crawl() {
 			}
 		}
 	}
+}
+
+func list() {
+	fmt.Printf("|%-2s|%s|%-2s|\n", "Index", "Keyword", "Current Episode")
+	listSubscribe := subscriber.GetListSubscriber()
+	for i := range listSubscribe {
+		keyword, eps := subscriber.GetSubscribeInfo(i)
+		fmt.Printf("|%-2d|%s|%-2d|\n", i, keyword, eps)
+	}
+}
+
+func removesubscribe() {
+	var index int
+	fmt.Printf("which index? ")
+	fmt.Scanln(&index)
+	subscriber.RemoveSubscribe(index)
 }

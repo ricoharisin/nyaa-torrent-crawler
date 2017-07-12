@@ -2,6 +2,7 @@ package subscriber
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -43,4 +44,16 @@ func InsertNewSubscribe(keyword string, episode int) {
 	oldList = append(oldList, newSubscribe)
 	newList, _ := json.Marshal(oldList)
 	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
+}
+
+func RemoveSubscribe(index int) {
+	oldList := GetListSubscriber()
+	if index < len(oldList) {
+		oldList = append(oldList[:index], oldList[index+1:]...)
+		newList, _ := json.Marshal(oldList)
+		ioutil.WriteFile("./subscribe.info.json", newList, 0777)
+	} else {
+		fmt.Println("invalid index")
+	}
+
 }
