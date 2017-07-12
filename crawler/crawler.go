@@ -12,13 +12,14 @@ import (
 const BaseURL string = "https://nyaa.si"
 
 func StartCrawling(keyword string, prevEpisode int) (bool, string) {
+	fmt.Println("crawling " + keyword + " .........")
 	isSuccess, urlDetail, _ := getDetailUrlForLastEpisode(keyword, prevEpisode)
 	if isSuccess {
 		_, torrentUrl := getTorrentUrlFromDetail(urlDetail)
-		fmt.Println(torrentUrl)
+		fmt.Println("found the latest episode!! will download" + torrentUrl)
 		return true, torrentUrl
 	}
-
+	fmt.Println("no latest episode found :(")
 	return false, ""
 }
 
