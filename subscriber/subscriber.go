@@ -2,19 +2,21 @@ package subscriber
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
-var list []interface{}
+var list []SubscribeInfo
 
 type SubscribeInfo struct {
-	keyword string
-	episode int
+	Keyword string `json:"keyword"`
+	Episode int    `json:"episode"`
 }
 
-func GetListSubscriber() []interface{} {
+func GetListSubscriber() []SubscribeInfo {
 	raw := getSubscribeInfoFile()
 	json.Unmarshal(raw, &list)
+	fmt.Println(list)
 	return list
 }
 
@@ -24,15 +26,13 @@ func getSubscribeInfoFile() []byte {
 }
 
 func GetSubscribeInfo(index int) (string, int) {
-	detail := list[index].(map[string]interface{})
-	return detail["keyword"].(string), int(detail["episode"].(float64))
+	return list[index].Keyword, list[index].Episode
 }
 
 func UpdateSubscribeEpisode(index int) {
-	detail := list[index].(map[string]interface{})
-	prevEps := int(detail["episode"].(float64))
+	prevEps := list[index].Episode
 	nextEps := prevEps + 1
-	detail["episode"] = float64(nextEps)
+	list[index].Episode = nextEps
 	newList, _ := json.Marshal(list)
 	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
 }
