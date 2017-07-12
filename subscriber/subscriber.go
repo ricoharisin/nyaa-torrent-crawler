@@ -2,7 +2,6 @@ package subscriber
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 )
 
@@ -16,7 +15,6 @@ type SubscribeInfo struct {
 func GetListSubscriber() []SubscribeInfo {
 	raw := getSubscribeInfoFile()
 	json.Unmarshal(raw, &list)
-	fmt.Println(list)
 	return list
 }
 
@@ -34,5 +32,15 @@ func UpdateSubscribeEpisode(index int) {
 	nextEps := prevEps + 1
 	list[index].Episode = nextEps
 	newList, _ := json.Marshal(list)
+	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
+}
+
+func InsertNewSubscribe(keyword string, episode int) {
+	oldList := GetListSubscriber()
+	var newSubscribe SubscribeInfo
+	newSubscribe.Keyword = keyword
+	newSubscribe.Episode = episode
+	oldList = append(oldList, newSubscribe)
+	newList, _ := json.Marshal(oldList)
 	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
 }
