@@ -1,4 +1,4 @@
-package subscriber
+package subscription
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ type SubscribeInfo struct {
 	Episode int    `json:"episode"`
 }
 
-func GetListSubscriber() []SubscribeInfo {
+func GetListSubscription() []SubscribeInfo {
 	raw := getSubscribeInfoFile()
 	json.Unmarshal(raw, &list)
 	return list
@@ -24,11 +24,11 @@ func getSubscribeInfoFile() []byte {
 	return raw
 }
 
-func GetSubscribeInfo(index int) (string, int) {
+func GetSubscriptionInfo(index int) (string, int) {
 	return list[index].Keyword, list[index].Episode
 }
 
-func UpdateSubscribeEpisode(index int) {
+func UpdateSubscriptionEpisode(index int) {
 	prevEps := list[index].Episode
 	nextEps := prevEps + 1
 	list[index].Episode = nextEps
@@ -36,8 +36,8 @@ func UpdateSubscribeEpisode(index int) {
 	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
 }
 
-func InsertNewSubscribe(keyword string, episode int) {
-	oldList := GetListSubscriber()
+func InsertNewSubscription(keyword string, episode int) {
+	oldList := GetListSubscription()
 	var newSubscribe SubscribeInfo
 	newSubscribe.Keyword = keyword
 	newSubscribe.Episode = episode
@@ -46,8 +46,8 @@ func InsertNewSubscribe(keyword string, episode int) {
 	ioutil.WriteFile("./subscribe.info.json", newList, 0777)
 }
 
-func RemoveSubscribe(index int) {
-	oldList := GetListSubscriber()
+func RemoveSubscription(index int) {
+	oldList := GetListSubscription()
 	if index < len(oldList) {
 		oldList = append(oldList[:index], oldList[index+1:]...)
 		newList, _ := json.Marshal(oldList)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/ricoharisin/nyaa-torrent-crawler/crawler"
 	"github.com/ricoharisin/nyaa-torrent-crawler/downloader"
-	"github.com/ricoharisin/nyaa-torrent-crawler/subscriber"
+	"github.com/ricoharisin/nyaa-torrent-crawler/subscription"
 )
 
 func main() {
@@ -25,9 +25,8 @@ func main() {
 		case "list":
 			list()
 			break
-		case "removesubscribe":
-			list()
-			removesubscribe()
+		case "unsubscribe":
+			removeSubscription(args)
 			break
 		default:
 			showHelp()
@@ -38,7 +37,7 @@ func main() {
 
 func subscribe(args1 string, args2 string) {
 	intargs, _ := strconv.Atoi(args2)
-	subscriber.InsertNewSubscribe(args1, intargs)
+	subscription.InsertNewSubscription(args1, intargs)
 }
 
 func showHelp() {
@@ -52,14 +51,14 @@ func showHelp() {
 }
 
 func crawl() {
-	listSubscribe := subscriber.GetListSubscriber()
+	listSubscribe := subscription.GetListSubscription()
 	for i := range listSubscribe {
-		keyword, eps := subscriber.GetSubscribeInfo(i)
+		keyword, eps := subscription.GetSubscriptionInfo(i)
 		isSuccess, torrentUrl := crawler.StartCrawling(keyword, eps)
 		if isSuccess {
 			isSuccessDownload := downloader.DownloadTorrent(torrentUrl)
 			if isSuccessDownload {
-				subscriber.UpdateSubscribeEpisode(i)
+				subscription.UpdateSubscriptionEpisode(i)
 			}
 		}
 	}
@@ -67,16 +66,21 @@ func crawl() {
 
 func list() {
 	fmt.Printf("|%-2s|%s|%-2s|\n", "Index", "Keyword", "Current Episode")
-	listSubscribe := subscriber.GetListSubscriber()
+	listSubscribe := subscription.GetListSubscription()
 	for i := range listSubscribe {
-		keyword, eps := subscriber.GetSubscribeInfo(i)
+		keyword, eps := subscription.GetSubscriptionInfo(i)
 		fmt.Printf("|%-2d|%s|%-2d|\n", i, keyword, eps)
 	}
 }
 
-func removesubscribe() {
+func removeSubscription(args []string) {
 	var index int
-	fmt.Printf("which index? ")
-	fmt.Scanln(&index)
-	subscriber.RemoveSubscribe(index)
+	if len(args) != 3 {
+		list()
+		fmt.Printf("which index? ")
+		fmt.Scanln(&index)
+	} else {
+		index, _ = strconv.Atoi(args[2])
+	}
+	subscription.RemoveSubscription(index)
 }
